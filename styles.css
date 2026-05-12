@@ -170,6 +170,8 @@ a:hover { text-decoration: underline; }
   .brand-mark { width: 36px; height: 36px; }
   .brand-name { font-size: 1.25rem; }
   .brand-tagline { font-size: 0.62rem; letter-spacing: 0.10em; }
+  /* Hide the About link on narrow screens — header space is tight. */
+  .about-link { display: none; }
 }
 .field-mode .brand-mark { width: 48px; height: 48px; }
 .field-mode .brand-name { font-size: 1.7rem; }

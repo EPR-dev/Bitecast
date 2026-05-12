@@ -1,0 +1,582 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Bitecast — about</title>
+    <meta name="description" content="A client-side fishing app demo for Fiesta Island. Architecture overview, scale path, and a link to try the live app." />
+    <link rel="icon" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><circle cx='8' cy='8' r='6' fill='%230a72b8'/></svg>" />
+    <style>
+      :root {
+        --bg: #f0f9ff;
+        --surface: #ffffff;
+        --surface-2: #f8fafc;
+        --border: #e2e8f0;
+        --border-strong: #cbd5e1;
+        --ink-1: #0f172a;
+        --ink-2: #475569;
+        --ink-3: #64748b;
+        --accent: #0a72b8;
+        --accent-dark: #075584;
+        --accent-soft: #e0f2fe;
+        --teal: #0d9488;
+        --teal-soft: #ccfbf1;
+        --go: #059669;
+        --warning: #d97706;
+        --danger: #dc2626;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+      }
+      * { box-sizing: border-box; }
+      html, body { margin: 0; padding: 0; background: var(--bg); color: var(--ink-1); }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        line-height: 1.55;
+        -webkit-font-smoothing: antialiased;
+      }
+      a { color: var(--accent); text-decoration: none; }
+      a:hover { text-decoration: underline; }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 0.92em;
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        padding: 1px 6px;
+        border-radius: 4px;
+      }
+      .wrap { max-width: 920px; margin: 0 auto; padding: 28px 20px 80px; }
+
+      /* Site header */
+      .site-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--ink-1);
+      }
+      .brand-mark {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: var(--accent);
+        display: inline-block;
+        position: relative;
+      }
+      .brand-mark::after {
+        content: "";
+        position: absolute;
+        inset: 8px;
+        border-radius: 50%;
+        background: var(--surface);
+      }
+      .brand-name {
+        font-weight: 800;
+        font-size: 1.25rem;
+        letter-spacing: -0.01em;
+        color: var(--accent-dark);
+      }
+      .nav-link {
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 8px 14px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        background: var(--surface);
+        color: var(--ink-1);
+      }
+
+      /* Hero CTA — the BIG demo button */
+      .hero {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 36px 32px;
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero-eyebrow {
+        font-size: 0.75rem;
+        font-weight: 800;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--accent);
+        margin-bottom: 10px;
+      }
+      .hero-title {
+        font-size: 2rem;
+        font-weight: 800;
+        letter-spacing: -0.02em;
+        margin: 0 0 10px;
+        color: var(--ink-1);
+        line-height: 1.15;
+      }
+      .hero-sub {
+        font-size: 1.05rem;
+        color: var(--ink-2);
+        margin: 0 0 24px;
+        max-width: 60ch;
+      }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        align-items: center;
+      }
+      .cta-primary {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--accent);
+        color: #ffffff;
+        font-weight: 800;
+        font-size: 1.05rem;
+        padding: 16px 28px;
+        border-radius: 999px;
+        border: 2px solid var(--accent);
+        text-decoration: none;
+        letter-spacing: 0.01em;
+        transition: transform 80ms ease, background 120ms ease;
+      }
+      .cta-primary:hover {
+        background: var(--accent-dark);
+        text-decoration: none;
+        transform: translateY(-1px);
+      }
+      .cta-primary .arrow {
+        font-size: 1.2rem;
+        line-height: 1;
+        display: inline-block;
+        transition: transform 120ms ease;
+      }
+      .cta-primary:hover .arrow { transform: translateX(3px); }
+      .cta-secondary {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--surface);
+        color: var(--ink-1);
+        font-weight: 700;
+        font-size: 0.95rem;
+        padding: 14px 22px;
+        border-radius: 999px;
+        border: 1px solid var(--border-strong);
+        text-decoration: none;
+      }
+      .cta-secondary:hover {
+        text-decoration: none;
+        border-color: var(--accent);
+        color: var(--accent-dark);
+      }
+      .cta-hint {
+        margin-top: 14px;
+        font-size: 0.85rem;
+        color: var(--ink-3);
+      }
+      .hero-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 16px;
+      }
+      .pill {
+        font-size: 0.72rem;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent-dark);
+        border: 1px solid #bae6fd;
+      }
+      .pill.success { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+
+      /* Sections */
+      h2 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        letter-spacing: -0.01em;
+        margin: 44px 0 10px;
+        color: var(--ink-1);
+      }
+      h2 + p { margin-top: 0; color: var(--ink-2); }
+      h3 {
+        font-size: 1.05rem;
+        font-weight: 800;
+        letter-spacing: 0;
+        margin: 28px 0 8px;
+        color: var(--ink-1);
+      }
+      .lead { font-size: 1.05rem; }
+      .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 32px 0;
+        border: none;
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+        margin: 20px 0 8px;
+      }
+      .stat {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 14px 16px;
+      }
+      .stat-val {
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: var(--ink-1);
+        line-height: 1;
+      }
+      .stat-val.success { color: var(--go); }
+      .stat-label {
+        font-size: 0.78rem;
+        color: var(--ink-3);
+        margin-top: 6px;
+      }
+      @media (max-width: 700px) {
+        .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      }
+
+      .pillar-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+      @media (max-width: 800px) {
+        .pillar-grid { grid-template-columns: 1fr; }
+      }
+      .pillar {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        padding: 16px 18px;
+      }
+      .pillar-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+      .pillar-name {
+        font-weight: 800;
+        font-size: 1rem;
+        color: var(--ink-1);
+      }
+      .tag {
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 2px 8px;
+        border-radius: 999px;
+      }
+      .tag-data { background: var(--accent-soft); color: var(--accent-dark); }
+      .tag-engine { background: #d1fae5; color: #065f46; }
+      .tag-ux { background: #fef3c7; color: #92400e; }
+      .pillar ul {
+        margin: 0;
+        padding-left: 18px;
+        font-size: 0.9rem;
+        color: var(--ink-2);
+      }
+      .pillar li { margin-bottom: 6px; line-height: 1.45; }
+
+      /* Callout */
+      .callout {
+        border: 1px solid;
+        border-radius: var(--radius-md);
+        padding: 14px 18px;
+        margin: 22px 0;
+      }
+      .callout-info { background: #f0f9ff; border-color: #bae6fd; }
+      .callout-success { background: #ecfdf5; border-color: #6ee7b7; }
+      .callout-warning { background: #fffbeb; border-color: #fde68a; }
+      .callout-title {
+        font-weight: 800;
+        font-size: 0.95rem;
+        margin-bottom: 4px;
+      }
+      .callout-info .callout-title { color: var(--accent-dark); }
+      .callout-success .callout-title { color: #065f46; }
+      .callout-warning .callout-title { color: #92400e; }
+      .callout p { margin: 0; color: var(--ink-1); font-size: 0.95rem; }
+
+      /* Table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        margin: 12px 0 22px;
+        font-size: 0.92rem;
+      }
+      thead {
+        background: var(--surface-2);
+      }
+      th, td {
+        text-align: left;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        vertical-align: top;
+      }
+      th {
+        font-size: 0.8rem;
+        font-weight: 800;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+      td:first-child { font-weight: 700; color: var(--ink-1); }
+      tr:last-child td { border-bottom: none; }
+      @media (max-width: 700px) {
+        table { font-size: 0.85rem; }
+        th, td { padding: 8px 10px; }
+      }
+
+      /* Footer */
+      .site-foot {
+        margin-top: 40px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+        font-size: 0.85rem;
+        color: var(--ink-3);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+      }
+
+      /* Sticky inline mini-CTA when scrolled */
+      @media (min-width: 800px) {
+        .hero-title { font-size: 2.4rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+
+      <header class="site-head">
+        <a class="brand" href="./" aria-label="Bitecast home">
+          <span class="brand-mark" aria-hidden="true"></span>
+          <span class="brand-name">Bitecast</span>
+        </a>
+        <a class="nav-link" href="./">Open the app</a>
+      </header>
+
+      <!-- HERO CTA -->
+      <section class="hero">
+        <div class="hero-eyebrow">Mission Bay · Fiesta Island · demo</div>
+        <h1 class="hero-title">Forecast the bite — tide-aware, species-aware, offline-first.</h1>
+        <p class="hero-sub">
+          A small client-side fishing app that turns NOAA tides, marine weather, and Mission Bay
+          species biology into a plain-language verdict and a continuous heat map of where to cast.
+        </p>
+        <div class="hero-pills">
+          <span class="pill">Client-only</span>
+          <span class="pill">Offline-first</span>
+          <span class="pill">No backend</span>
+          <span class="pill success">Demo-ready</span>
+        </div>
+        <div class="cta-row">
+          <a class="cta-primary" href="https://epr-dev.github.io/Bitecast/">
+            Try Bitecast <span class="arrow">→</span>
+          </a>
+          <a class="cta-secondary" href="https://github.com/EPR-dev/Bitecast">
+            Browse the code
+          </a>
+        </div>
+        <p class="cta-hint">Best on a phone. Works on desktop too. No login, no install.</p>
+      </section>
+
+      <div class="stat-grid">
+        <div class="stat"><div class="stat-val success">0</div><div class="stat-label">Backend services</div></div>
+        <div class="stat"><div class="stat-val">12</div><div class="stat-label">Species in the engine</div></div>
+        <div class="stat"><div class="stat-val">2</div><div class="stat-label">Live APIs (NOAA + Open-Meteo)</div></div>
+        <div class="stat"><div class="stat-val success">100%</div><div class="stat-label">Offline-capable</div></div>
+      </div>
+
+      <hr class="divider" />
+
+      <h2>A. How the dashboard is built</h2>
+      <p>
+        Bitecast is three layers stacked on top of MapLibre GL: a <strong>data layer</strong> of curated
+        place knowledge, an <strong>engine layer</strong> that turns conditions into a verdict, and a
+        <strong>UX layer</strong> built around field readability and decision support. Nothing on the
+        server — every byte ships to the browser and runs there.
+      </p>
+
+      <div class="pillar-grid">
+        <article class="pillar">
+          <div class="pillar-head">
+            <span class="pillar-name">Place knowledge</span>
+            <span class="tag tag-data">Data</span>
+          </div>
+          <ul>
+            <li><strong>~8 GeoJSON files</strong> — shore, park, access, hazards, POIs, eelgrass, zones, bathy grid.</li>
+            <li><strong>Bathymetric grid</strong> — ~55 m cells baked with inverse-distance weighting; each cell carries <code>depth_ft</code>, <code>dist_shore_m</code>, <code>dist_eelgrass_m</code>, <code>bottom_class</code>.</li>
+            <li><strong>Live data</strong> — NOAA station <code>9410170</code> for tides, Open-Meteo for marine weather, 7-day horizon. Both gracefully degrade to a last-good cache.</li>
+            <li><strong>Personal data</strong> — IndexedDB for journal entries and photos. Never leaves the device.</li>
+          </ul>
+        </article>
+        <article class="pillar">
+          <div class="pillar-head">
+            <span class="pillar-name">Scoring & decisions</span>
+            <span class="tag tag-engine">Engine</span>
+          </div>
+          <ul>
+            <li><strong>Species habitat profile</strong> — each of 12 species has a depth gaussian plus shore / eelgrass / channel preferences.</li>
+            <li><strong>Per-cell score</strong> — species fit × tide-stage match × time-of-day × season weight. Drives the heat map and the "best spot" pin.</li>
+            <li><strong>Verdict</strong> — Go / OK / Skip with plain-language reasons. Decision support, not data dump.</li>
+            <li><strong>Slam logic</strong> — themed multi-species challenges (Inshore, Summer Bite, Shore-to-Channel, Night Bite) computed from the journal.</li>
+          </ul>
+        </article>
+        <article class="pillar">
+          <div class="pillar-head">
+            <span class="pillar-name">Field-first UI</span>
+            <span class="tag tag-ux">UX</span>
+          </div>
+          <ul>
+            <li><strong>Scrubbable timeline</strong> — 12-h SVG tide curve with sun bands. Every panel re-scores as you drag.</li>
+            <li><strong>7-day picker</strong> — verdict, heat map, and species suggestions follow the chosen day.</li>
+            <li><strong>Field mode</strong> — high-contrast, bigger touch targets for sunlight on a boat deck.</li>
+            <li><strong>Offline-first</strong> — Service Worker pre-caches shell, GeoJSON, and tiles. Works without signal.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="callout callout-info">
+        <div class="callout-title">Single thesis</div>
+        <p>Anyone can render a tide chart. The value compounds in the <strong>place knowledge</strong> — hand-curated bathymetry, species habitat profiles, and per-place rules that turn raw data into a verdict a 14-year-old can act on.</p>
+      </div>
+
+      <hr class="divider" />
+
+      <h2>B. Scaling to an OnWater-class app</h2>
+      <p>
+        Three discrete fundable phases get you from today's demo to a multi-region marine app.
+        Each phase is additive — nothing built in one phase has to be thrown away in the next.
+      </p>
+
+      <h3>The three-tier roadmap</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Stage</th>
+            <th>Scope</th>
+            <th>Key changes</th>
+            <th>Unlocks</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Demo (today)</td>
+            <td>Fiesta Island, single user</td>
+            <td>Static GeoJSON, no auth, IndexedDB for personal data</td>
+            <td>Compelling pitch, free hosting, runs on a USB stick</td>
+          </tr>
+          <tr>
+            <td>Single-region prod</td>
+            <td>Mission Bay → all of San Diego</td>
+            <td>Auth + backend, PostGIS tile server, real community, native PWA shell, payments</td>
+            <td>First paying users, real social, push notifications, app-store distribution</td>
+          </tr>
+          <tr>
+            <td>OnWater-class</td>
+            <td>Any waterbody, NA → global</td>
+            <td>Multi-region ingestion pipeline, per-region rules engine, marine forecast aggregation, regulation database, multi-mode (fishing + paddle + sail)</td>
+            <td>Network effect, content licensing, B2B (charters, guides), defensible moat</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>Keep / replace / add</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>Keep as-is</th>
+            <th>Replace under the hood</th>
+            <th>Add new</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Per-species habitat model</td>
+            <td>Static JSON → API + tile server</td>
+            <td>Auth + multi-tenant data model</td>
+          </tr>
+          <tr>
+            <td>Per-cell scoring function</td>
+            <td>IndexedDB-only → cloud sync</td>
+            <td>Habitat ingestion pipeline</td>
+          </tr>
+          <tr>
+            <td>Verdict engine</td>
+            <td>Hardcoded place → region config</td>
+            <td>Per-region regulation database</td>
+          </tr>
+          <tr>
+            <td>Slam & achievement logic</td>
+            <td>Service Worker → native offline</td>
+            <td>Native shell (RN / Capacitor)</td>
+          </tr>
+          <tr>
+            <td>Field-mode UX</td>
+            <td>Open-Meteo only → forecast aggregator</td>
+            <td>Subscription plumbing</td>
+          </tr>
+          <tr>
+            <td>Anonymous community shape</td>
+            <td>Seeded data → moderated submissions</td>
+            <td>Privacy controls (hex-binning, opt-in)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-success">
+        <div class="callout-title">Highest-leverage next move</div>
+        <p>
+          Build the <strong>habitat-data ingestion pipeline</strong> before the backend. A weekend per new region beats a quarter per new region. Once bathymetry + eelgrass + OSM amenities + tide-station lookup are scripted, every new waterbody becomes "config + curate" instead of "rebuild." That pipeline is the actual moat.
+        </p>
+      </div>
+
+      <!-- BOTTOM CTA — second highlight of the demo link -->
+      <section class="hero" style="margin-top: 40px; text-align: center;">
+        <div class="hero-eyebrow">Ready to look around?</div>
+        <h2 style="margin: 8px 0 14px; font-size: 1.6rem;">Open Bitecast on your phone or desktop.</h2>
+        <p class="hero-sub" style="margin: 0 auto 20px;">
+          No sign-in. No install. Drag the tide timeline, watch the heat map re-score, log a catch.
+        </p>
+        <div class="cta-row" style="justify-content: center;">
+          <a class="cta-primary" href="https://epr-dev.github.io/Bitecast/">
+            Try Bitecast <span class="arrow">→</span>
+          </a>
+        </div>
+      </section>
+
+      <footer class="site-foot">
+        <span>Built fully client-side · vanilla JS + MapLibre + a Service Worker</span>
+        <span>
+          <a href="https://github.com/EPR-dev/Bitecast">github.com/EPR-dev/Bitecast</a>
+        </span>
+      </footer>
+
+    </div>
+  </body>
+</html>

@@ -7,7 +7,7 @@
 // Bump CACHE_VERSION when you ship breaking changes to the app shell so
 // previous caches are evicted on activate.
 
-const CACHE_VERSION = "bitecast-v8";
+const CACHE_VERSION = "bitecast-v9";
 const SHELL_CACHE = CACHE_VERSION + "-shell";
 const TILE_CACHE = CACHE_VERSION + "-tiles";
 

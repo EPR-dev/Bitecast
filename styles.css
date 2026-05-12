@@ -220,7 +220,7 @@ a:hover { text-decoration: underline; }
     left: 0;
     right: 0;
     bottom: 0;
-    height: 48%;
+    height: 55%;
     border-left: none;
     border-top: 1px solid var(--border);
     border-top-left-radius: var(--radius-lg);
@@ -228,8 +228,9 @@ a:hover { text-decoration: underline; }
     box-shadow: 0 -10px 30px rgba(12, 26, 44, 0.08);
     transition: height 220ms ease;
   }
-  /* Tap the handle to minimize and get a big map. */
-  body.sheet-min .sheet { height: 22%; }
+  /* Default landing state on mobile: map is the hero, only the handle + tabs
+     peek up from the bottom. Tapping a tab or the handle expands the sheet. */
+  body.sheet-min .sheet { height: 92px; }
   /* Picker mode always shrinks the sheet so the map is reachable. */
   body.picker-mode .sheet { height: 22%; }
   .sheet-handle {

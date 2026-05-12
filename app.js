@@ -2993,6 +2993,18 @@
           p.classList.toggle("is-active", on);
           p.hidden = !on;
         });
+        // On mobile: expand the sheet whenever the user taps a tab, so the
+        // map-first landing experience gracefully reveals the data on demand.
+        if (window.matchMedia("(max-width: 800px)").matches &&
+            document.body.classList.contains("sheet-min")) {
+          document.body.classList.remove("sheet-min");
+          localStorage.setItem("bitecast.sheetMin", "0");
+          const h = document.getElementById("sheetHandle");
+          if (h) h.setAttribute("aria-expanded", "true");
+          if (map && typeof map.resize === "function") {
+            window.setTimeout(() => map.resize(), 260);
+          }
+        }
       });
     });
 
@@ -3021,19 +3033,23 @@
 
     $("toggleJournalMode").addEventListener("click", () => setPickerMode(!pickerMode));
 
-    // Tap the bottom-sheet handle on mobile to toggle between default and minimized
-    // (so the map gets nearly the whole screen). Choice persists per device.
+    // Bottom-sheet sizing on mobile.
+    //
+    // Default landing experience on mobile: map is the hero (full viewport
+    // behind a thin tab strip). The sheet expands when the user taps a tab
+    // or the handle. Choice persists per device once they interact.
     const sheetHandle = $("sheetHandle");
+    const isMobile = window.matchMedia("(max-width: 800px)").matches;
+    const SHEET_MIN_KEY = "bitecast.sheetMin";
+    const stored = localStorage.getItem(SHEET_MIN_KEY);
+    const startMin = isMobile && (stored === null || stored === "1");
+    if (startMin) document.body.classList.add("sheet-min");
     if (sheetHandle) {
-      const SHEET_MIN_KEY = "bitecast.sheetMin";
-      const savedMin = localStorage.getItem(SHEET_MIN_KEY) === "1";
-      if (savedMin) document.body.classList.add("sheet-min");
-      sheetHandle.setAttribute("aria-expanded", savedMin ? "false" : "true");
+      sheetHandle.setAttribute("aria-expanded", startMin ? "false" : "true");
       sheetHandle.addEventListener("click", () => {
         const isMin = document.body.classList.toggle("sheet-min");
         localStorage.setItem(SHEET_MIN_KEY, isMin ? "1" : "0");
         sheetHandle.setAttribute("aria-expanded", isMin ? "false" : "true");
-        // Tell MapLibre the container resized so the canvas refits.
         if (map && typeof map.resize === "function") {
           window.setTimeout(() => map.resize(), 260);
         }

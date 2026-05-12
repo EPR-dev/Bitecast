@@ -1,0 +1,30 @@
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node (not used now, but in case you add tooling later)
+node_modules/
+npm-debug.log*
+yarn-error.log*
+
+# Logs / local
+*.log
+.env
+.env.local
+
+# Build artifacts (none today, future-proofing)
+dist/
+build/
+.cache/
+
+# Cursor / canvas artifacts that live outside this repo anyway
+*.canvas.status.json

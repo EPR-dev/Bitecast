@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Bitecast</title>
+    <link
+      href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#panel">Skip to tools</a>
+    <header class="top-bar">
+      <a class="brand" href="./" aria-label="Bitecast home">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 36 24" width="32" height="22" focusable="false">
+            <path class="brand-wave-back" d="M2 18 Q 9 10, 16 18 T 30 18" />
+            <path class="brand-wave-front" d="M2 14 Q 9 4, 16 14 T 30 14" />
+            <circle class="brand-pulse" cx="16" cy="8.5" r="4" />
+            <circle class="brand-dot" cx="16" cy="8.5" r="2.6" />
+          </svg>
+        </span>
+        <span class="brand-text">
+          <h1 class="brand-name">Bitecast</h1>
+          <span class="brand-tagline">Forecast the bite &middot; Fiesta Island</span>
+        </span>
+      </a>
+      <div class="top-actions">
+        <div class="conn-pill" id="connectivityPill" title="Live data connectivity">
+          <span id="connectivityDot" class="conn-dot conn-online"></span>
+          <span id="connectivityText">Live</span>
+        </div>
+        <label class="toggle field-toggle">
+          <input type="checkbox" id="fieldMode" />
+          <span>Field Mode</span>
+        </label>
+        <button type="button" class="btn btn-ghost" id="whereAmI" title="Center on your location">
+          Where am I
+        </button>
+      </div>
+    </header>
+
+    <div class="app-shell">
+      <div id="map" role="application" aria-label="Map of Fiesta Island"></div>
+      <div id="heatLegend" class="heat-legend" aria-label="Heat map legend">
+        <div class="heat-legend-bar"></div>
+        <div class="heat-legend-labels">
+          <span>Low odds</span><span id="heatLegendTarget">Any species</span><span>Hot</span>
+        </div>
+      </div>
+
+      <aside id="panel" class="sheet" aria-label="Angler tools">
+        <div class="sheet-handle" aria-hidden="true"></div>
+
+        <nav class="tabs" role="tablist" aria-label="Panels">
+          <button type="button" class="tab is-active" role="tab" aria-selected="true" data-tab="today">Today</button>
+          <button type="button" class="tab" role="tab" aria-selected="false" data-tab="map">Map</button>
+          <button type="button" class="tab" role="tab" aria-selected="false" data-tab="conditions">Conditions</button>
+          <button type="button" class="tab" role="tab" aria-selected="false" data-tab="waypoints">Journal</button>
+        </nav>
+
+        <div class="tab-panels">
+          <section class="tab-panel is-active" id="tab-today" role="tabpanel" data-panel="today">
+            <h2 class="panel-title">Should you fish Fiesta Island today?</h2>
+            <p class="hint">
+              A plain-English read on tide stage, wind, and time of day, scored for a Mission Bay
+              fishing trip. Demo only — verify rules, tides, and conditions before you go.
+            </p>
+
+            <div id="todayVerdict" class="verdict-card">
+              <div class="verdict-pill">…</div>
+              <div class="verdict-header">
+                <span class="verdict-summary">Loading conditions…</span>
+                <span class="verdict-confidence">○○○○○</span>
+              </div>
+              <p class="verdict-headline">Pulling tide and weather data.</p>
+            </div>
+
+            <div id="datePicker" class="date-picker" aria-label="Trip day picker"></div>
+            <div id="scrubBar" class="scrub-bar" hidden></div>
+
+            <div class="target-block">
+              <div class="target-head">
+                <span class="target-eyebrow">Target species</span>
+                <span class="target-hint">Pick a fish to focus the heat map</span>
+              </div>
+              <div id="targetSpeciesPicker" class="target-picker" role="tablist" aria-label="Target species"></div>
+            </div>
+
+            <section id="targetSpeciesCard" class="zone-card" hidden aria-label="Best spot for the target species"></section>
+
+            <div id="stageCard" class="stage-card">
+              <div class="stage-row">
+                <span class="stage-label">Tide stage</span>
+                <span class="stage-label">—</span>
+              </div>
+              <h3 class="stage-headline">…</h3>
+              <p class="stage-detail">Tide schedule loading…</p>
+            </div>
+
+            <div class="timeline-card">
+              <div class="timeline-head">
+                <span class="timeline-title">12-hour outlook</span>
+                <span class="timeline-hint">Tap or drag to preview a future moment</span>
+              </div>
+              <svg id="tideTimeline" class="tide-timeline" viewBox="0 0 1200 160"
+                preserveAspectRatio="none" role="img" aria-label="Tide curve for the next 12 hours">
+                <text x="600" y="80" text-anchor="middle" fill="#94a3b8" font-size="14">Tide data loading…</text>
+              </svg>
+            </div>
+
+            <div id="todayConditions" class="condition-strip">
+              <span class="muted">Loading weather…</span>
+            </div>
+
+            <section id="insightsStrip" class="insights-card" hidden aria-label="Your personal patterns"></section>
+
+            <label class="field">
+              <span>What's on the plan?</span>
+              <select id="activitySelect">
+                <option value="fishing" selected>Fishing</option>
+                <option value="paddle">Kayak / SUP</option>
+                <option value="boat">Boat / jet ski</option>
+                <option value="dogs">Off-leash dogs</option>
+                <option value="bike">Bike or run the loop</option>
+              </select>
+            </label>
+
+            <h3 class="panel-subtitle">Best plays right now</h3>
+            <div id="todayPlays" class="chip-row">
+              <span class="muted">Loading…</span>
+            </div>
+
+            <h3 class="panel-subtitle">Tips for today</h3>
+            <ul id="todayRecs" class="today-recs"></ul>
+
+            <details class="why-block">
+              <summary>Why this verdict? <span id="whyScore" class="muted">—</span></summary>
+              <ul id="whyList" class="why-list"></ul>
+            </details>
+
+            <label class="check today-simple">
+              <input type="checkbox" id="simpleMapView" checked />
+              Simple map (shore, entries, hazards only)
+            </label>
+          </section>
+
+          <section class="tab-panel" id="tab-map" role="tabpanel" hidden data-panel="map">
+            <h2 class="panel-title">Map options</h2>
+            <p class="hint">Park boundary and activity zones are demo approximations, not survey-grade.</p>
+
+            <details class="filter-advanced" open>
+              <summary>Advanced map options</summary>
+
+              <fieldset class="filter-block">
+                <legend>Display</legend>
+                <label class="check">
+                  <input type="checkbox" id="filterTideColor" checked />
+                  Color shore by tide stage
+                </label>
+                <label class="check">
+                  <input type="checkbox" id="filterJournal" checked />
+                  Show my journal entries
+                </label>
+                <label class="check">
+                  <input type="checkbox" id="filterHeatmap" checked />
+                  Show habitat heat map
+                </label>
+                <label class="check">
+                  <input type="checkbox" id="filterEelgrass" checked />
+                  Show eelgrass beds
+                </label>
+              </fieldset>
+
+              <fieldset class="filter-block">
+                <legend>Activity zones</legend>
+                <div id="zoneFilters" class="check-grid"></div>
+              </fieldset>
+            </details>
+          </section>
+
+          <section class="tab-panel" id="tab-conditions" role="tabpanel" hidden data-panel="conditions">
+            <h2 class="panel-title">Tide</h2>
+            <div id="tideCard" class="card">
+              <p class="muted">Loading NOAA tide data…</p>
+            </div>
+
+            <h2 class="panel-title">Weather</h2>
+            <div id="weatherCard" class="card">
+              <p class="muted">Loading Open-Meteo (San Diego area)…</p>
+            </div>
+          </section>
+
+          <section class="tab-panel" id="tab-waypoints" role="tabpanel" hidden data-panel="waypoints">
+            <div class="journal-head">
+              <h2 class="panel-title">Journal <span class="badge" id="journalCount">0</span></h2>
+              <button type="button" class="btn btn-primary" id="toggleJournalMode">Add to journal</button>
+            </div>
+            <p class="hint">
+              Tap <strong>Add to journal</strong>, then tap the map where the catch / spot / sighting
+              happened. Conditions get snapshotted automatically. Saved only in this browser.
+            </p>
+            <p id="journalBanner" class="banner is-hidden" role="status"></p>
+            <p id="achievementsBanner" class="banner banner-success is-hidden" role="status"></p>
+
+            <div id="journalForm" class="card journal-form" hidden>
+              <h3 class="panel-title">New entry</h3>
+
+              <div class="form-segmented" role="tablist" aria-label="Entry type">
+                <button type="button" class="seg is-active" data-entry-type="catch">Catch</button>
+                <button type="button" class="seg" data-entry-type="spot">Spot</button>
+                <button type="button" class="seg" data-entry-type="sighting">Sighting</button>
+              </div>
+
+              <div data-show-for="catch">
+                <label class="field">
+                  <span>Species</span>
+                  <div class="species-pick">
+                    <div class="species-pick-current" id="jSpeciesCurrent">
+                      <span class="muted">No species picked yet</span>
+                      <button type="button" class="btn btn-primary" id="jSpeciesToggle">Pick species</button>
+                    </div>
+                    <div class="species-grid" id="speciesGrid" hidden></div>
+                  </div>
+                </label>
+
+                <div class="form-row">
+                  <label class="field">
+                    <span>Length (in)</span>
+                    <input type="number" id="jLength" step="0.25" min="0" />
+                  </label>
+                  <label class="field">
+                    <span>Weight (lb)</span>
+                    <input type="number" id="jWeight" step="0.1" min="0" />
+                  </label>
+                </div>
+
+                <label class="field">
+                  <span>Outcome</span>
+                  <div class="form-segmented">
+                    <button type="button" class="seg is-active" data-released="true">Released</button>
+                    <button type="button" class="seg" data-released="false">Kept</button>
+                  </div>
+                </label>
+
+                <label class="field">
+                  <span>Bait / lure</span>
+                  <input type="text" id="jBait" placeholder="e.g. 3-in swimbait, dropshot, sandcrab" />
+                </label>
+              </div>
+
+              <div data-show-for="spot,sighting">
+                <label class="field">
+                  <span>Name (optional)</span>
+                  <input type="text" id="jName" placeholder="e.g. Eelgrass edge near the bridge" />
+                </label>
+              </div>
+
+              <label class="field">
+                <span>Photo (optional)</span>
+                <input type="file" id="jPhoto" accept="image/*" capture="environment" />
+              </label>
+
+              <label class="field">
+                <span>Notes</span>
+                <textarea id="jNotes" rows="3" maxlength="500" placeholder="Anything worth remembering"></textarea>
+              </label>
+
+              <div class="muted" id="jLocation">Tap the map to set a location.</div>
+              <div class="conditions-preview muted" id="jConditions">Conditions will be saved automatically.</div>
+
+              <div class="row-actions">
+                <button type="button" class="btn" id="jCancel">Cancel</button>
+                <button type="button" class="btn btn-primary" id="jSave">Save entry</button>
+              </div>
+            </div>
+
+            <section id="discoveryDeckWrap" class="deck-wrap" hidden aria-label="Mission Bay species deck">
+              <div class="deck-head">
+                <h3 class="panel-subtitle">Mission Bay deck</h3>
+                <span class="badge" id="deckCount">0 / 12</span>
+              </div>
+              <div id="discoveryDeck" class="deck-grid"></div>
+            </section>
+
+            <section id="slamsWrap" class="slams-wrap" aria-label="Mission Bay slams">
+              <div class="deck-head">
+                <h3 class="panel-subtitle">Mission Bay slams</h3>
+                <span class="badge" id="slamsEarned">0 / 4</span>
+              </div>
+              <p class="hint slams-hint">
+                Themed multi-species challenges. Three fish to a slam — log them all to earn a permanent stamp.
+              </p>
+              <div id="slamsList" class="slams-list"></div>
+            </section>
+
+            <section id="achievementsWrap" class="achv-wrap" hidden aria-label="Achievements">
+              <div class="deck-head">
+                <h3 class="panel-subtitle">Achievements</h3>
+                <span class="badge" id="achievementsEarned">0 / 12</span>
+              </div>
+              <div id="achievementsList" class="achv-list"></div>
+            </section>
+
+            <section id="communityWrap" class="community-wrap" hidden aria-label="Community big-fish board">
+              <div class="deck-head">
+                <h3 class="panel-subtitle">Fiesta Island top catches</h3>
+                <span class="badge community-badge">demo</span>
+              </div>
+              <p class="hint">
+                Anonymous handles, zone names only. Compare your personal bests against what's hitting the bay.
+              </p>
+              <div id="communityFeatured" class="cf-card"></div>
+              <div id="communitySort" class="form-segmented community-sort" role="tablist" aria-label="Sort community board"></div>
+              <div id="communityList" class="cb-wrap"></div>
+            </section>
+
+            <ul id="journalList" class="journal-list"></ul>
+
+            <section class="backup-block" aria-label="Backup and restore">
+              <h3 class="panel-subtitle">Backup &amp; restore</h3>
+              <p class="hint">Journal lives in this browser only. Export occasionally so you don't lose entries if you clear data or switch devices.</p>
+              <div class="row-actions">
+                <button type="button" class="btn" id="exportJournalBtn">Export journal (JSON)</button>
+                <button type="button" class="btn" id="importJournalBtn">Import...</button>
+                <input type="file" id="importJournalFile" accept="application/json,.json" hidden />
+              </div>
+            </section>
+          </section>
+        </div>
+      </aside>
+    </div>
+
+    <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+    <script src="app.js"></script>
+  </body>
+</html>

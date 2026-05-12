@@ -1,0 +1,194 @@
+{
+  "type": "FeatureCollection",
+  "name": "Fiesta Island fishing zones (demo, hand-drawn)",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "east_channel_mouth",
+        "name": "East channel mouth",
+        "short": "East channel",
+        "habitat_primary": "channel",
+        "habitat_tags": ["channel", "sand-edge", "current", "drop-off"],
+        "depth_ft": [6, 15],
+        "summary": "Deeper channel along the NE shore where Mission Bay narrows. Sand drop-offs and moving current pull bait along the seam — flatfish lay on the edge, bass post up on structure, and pelagics can run on warm days.",
+        "tide_notes": {
+          "incoming": "Incoming water pushes bait up the channel — work the inside edge into the bay.",
+          "outgoing": "Outgoing tide concentrates bait against the sandbar — fish the last hour of the ebb.",
+          "slack-high": "Slow drift over the drop-off; rebait and reposition before the turn.",
+          "slack-low": "Low slack exposes the edge — cast tight to the deepest sand pocket."
+        },
+        "species": {
+          "california_halibut": 1.0,
+          "sand_bass": 0.9,
+          "spotted_bay_bass": 0.75,
+          "kelp_bass": 0.7,
+          "pacific_bonito": 0.7,
+          "pacific_mackerel": 0.55
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-117.2098, 32.7905],
+          [-117.2040, 32.7910],
+          [-117.2010, 32.7870],
+          [-117.2015, 32.7825],
+          [-117.2055, 32.7800],
+          [-117.2090, 32.7810],
+          [-117.2098, 32.7905]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "west_cove_eelgrass",
+        "name": "West cove eelgrass",
+        "short": "West cove",
+        "habitat_primary": "eelgrass",
+        "habitat_tags": ["eelgrass", "sand-patches", "protected", "shallow"],
+        "depth_ft": [3, 8],
+        "summary": "Protected SW cove with eelgrass beds and sandy lanes. Classic Mission Bay bay-bass habitat — fish work the eelgrass edges at first/last light and on a rising tide.",
+        "tide_notes": {
+          "incoming": "Rising water lifts bass up over the eelgrass — work the inside edge into the grass.",
+          "outgoing": "Falling tide pulls bait off the grass into sand lanes — fish the seam.",
+          "slack-high": "Slack high — try topwater or a slow plastic over the grass.",
+          "slack-low": "Low water exposes lanes — cast tight to the deepest grass patches."
+        },
+        "species": {
+          "spotted_bay_bass": 1.0,
+          "kelp_bass": 0.7,
+          "sand_bass": 0.6,
+          "california_halibut": 0.55,
+          "sargo": 0.45
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-117.2355, 32.7790],
+          [-117.2310, 32.7790],
+          [-117.2305, 32.7755],
+          [-117.2320, 32.7720],
+          [-117.2350, 32.7720],
+          [-117.2365, 32.7755],
+          [-117.2355, 32.7790]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "south_flats",
+        "name": "South dog-park flats",
+        "short": "South flats",
+        "habitat_primary": "flat",
+        "habitat_tags": ["sand-flat", "shallow", "surf-edge"],
+        "depth_ft": [1, 5],
+        "summary": "Shallow sand flats off the south end of the island. Croaker and corbina cruise the wash on a high incoming tide — sandcrabs and small bait shine.",
+        "tide_notes": {
+          "incoming": "Rising water gets corbina and croaker up onto the flats — light bait at the edge of the wash.",
+          "outgoing": "Falling tide pulls fish back to deeper sand — work the outside edge.",
+          "slack-high": "Best window if surface is calm — sight-cast spooky fish.",
+          "slack-low": "Flats mostly dry — wait for the turn."
+        },
+        "species": {
+          "california_corbina": 1.0,
+          "yellowfin_croaker": 0.9,
+          "spotfin_croaker": 0.85,
+          "walleye_surfperch": 0.55,
+          "round_stingray": 0.5
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-117.2240, 32.7660],
+          [-117.2205, 32.7620],
+          [-117.2150, 32.7615],
+          [-117.2115, 32.7645],
+          [-117.2135, 32.7675],
+          [-117.2185, 32.7685],
+          [-117.2230, 32.7680],
+          [-117.2240, 32.7660]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "southeast_dropoff",
+        "name": "South-east drop-off",
+        "short": "SE drop-off",
+        "habitat_primary": "drop-off",
+        "habitat_tags": ["sand", "drop-off", "channel-edge"],
+        "depth_ft": [6, 12],
+        "summary": "Sandy drop-off where the SE flats fall into deeper channel water. Halibut lay along the edge and sharks cruise it after dark.",
+        "tide_notes": {
+          "incoming": "Bait moves up the slope — slow-roll a swimbait on the rise.",
+          "outgoing": "Outgoing tide pulls bait off the flat — prime halibut window.",
+          "slack-high": "Slow drift over the edge with cut bait for sharks.",
+          "slack-low": "Edge is sharpest — cast tight to the deepest sand."
+        },
+        "species": {
+          "california_halibut": 1.0,
+          "smoothhound_shark": 0.85,
+          "leopard_shark": 0.8,
+          "sand_bass": 0.7,
+          "sargo": 0.55,
+          "round_stingray": 0.45
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-117.2095, 32.7795],
+          [-117.2020, 32.7790],
+          [-117.2000, 32.7740],
+          [-117.2030, 32.7700],
+          [-117.2085, 32.7710],
+          [-117.2100, 32.7765],
+          [-117.2095, 32.7795]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "north_point_current",
+        "name": "North point current",
+        "short": "North point",
+        "habitat_primary": "current",
+        "habitat_tags": ["open-water", "current", "sand"],
+        "depth_ft": [8, 20],
+        "summary": "Open water off the north tip where current flushes the bay. Bonito and mackerel run here on warm summer days; halibut hold the sand below.",
+        "tide_notes": {
+          "incoming": "Strong current — chase boils with chrome jigs.",
+          "outgoing": "Bait swept out of the bay — work the seam.",
+          "slack-high": "Drift sand for halibut while you wait for the next push.",
+          "slack-low": "Quiet window — pre-rig for the turn."
+        },
+        "species": {
+          "pacific_bonito": 1.0,
+          "pacific_mackerel": 0.9,
+          "california_halibut": 0.7,
+          "sand_bass": 0.55,
+          "walleye_surfperch": 0.4
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-117.2230, 32.7910],
+          [-117.2155, 32.7915],
+          [-117.2105, 32.7945],
+          [-117.2130, 32.7980],
+          [-117.2200, 32.7975],
+          [-117.2245, 32.7945],
+          [-117.2230, 32.7910]
+        ]]
+      }
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "type": "FeatureCollection",
+  "name": "Fiesta Island eelgrass beds (demo, hand-drawn from local knowledge)",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "west_cove_eelgrass",
+        "name": "West cove eelgrass",
+        "density": "dense"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-117.2310, 32.7790],
+          [-117.2295, 32.7782],
+          [-117.2293, 32.7755],
+          [-117.2305, 32.7730],
+          [-117.2325, 32.7728],
+          [-117.2335, 32.7755],
+          [-117.2325, 32.7783],
+          [-117.2310, 32.7790]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "northwest_shelf",
+        "name": "NW shelf eelgrass",
+        "density": "patchy"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-117.2250, 32.7870],
+          [-117.2225, 32.7868],
+          [-117.2215, 32.7855],
+          [-117.2230, 32.7840],
+          [-117.2250, 32.7845],
+          [-117.2258, 32.7860],
+          [-117.2250, 32.7870]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "south_flats_eelgrass",
+        "name": "South flats eelgrass",
+        "density": "thin"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-117.2230, 32.7670],
+          [-117.2195, 32.7665],
+          [-117.2155, 32.7665],
+          [-117.2125, 32.7670],
+          [-117.2125, 32.7685],
+          [-117.2160, 32.7688],
+          [-117.2200, 32.7688],
+          [-117.2230, 32.7682],
+          [-117.2230, 32.7670]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "east_inside_shelf",
+        "name": "East inside-shelf eelgrass",
+        "density": "patchy"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-117.2122, 32.7800],
+          [-117.2110, 32.7795],
+          [-117.2110, 32.7770],
+          [-117.2120, 32.7755],
+          [-117.2135, 32.7758],
+          [-117.2138, 32.7785],
+          [-117.2122, 32.7800]
+        ]]
+      }
+    }
+  ]
+}

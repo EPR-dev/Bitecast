@@ -1,0 +1,158 @@
+{
+  "type": "FeatureCollection",
+  "name": "Fiesta Island entries (OSM)",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Ski Beach Boat Launch",
+        "type": "Boat Launch",
+        "activity": "boat",
+        "public_access": true,
+        "low_tide_ok": true,
+        "source": "OSM node 48978905",
+        "notes": "Concrete ramp on Ski Beach—main trailer launch for Fiesta Island."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.2332758,
+          32.7732246
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "South-east parking",
+        "type": "Parking",
+        "activity": "general",
+        "public_access": true,
+        "low_tide_ok": true,
+        "source": "OSM way 88161527 (hand-corrected location)",
+        "notes": "South-east parking off Fiesta Island Road, near the bridge approach."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.21550,
+          32.77020
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "East Shore Mid parking",
+        "type": "Parking",
+        "activity": "general",
+        "public_access": true,
+        "low_tide_ok": true,
+        "source": "OSM way 88161570 (hand-corrected location)",
+        "notes": "Mid east-shore parking on the loop road — easy walk to the East Channel shore."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.21430,
+          32.77850
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "East Shore North parking",
+        "type": "Parking",
+        "activity": "general",
+        "public_access": true,
+        "low_tide_ok": true,
+        "source": "OSM way 88161554 (hand-corrected location)",
+        "notes": "North-mid parking on the loop road — picnic tables and water-edge access."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.21720,
+          32.78270
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "North End parking",
+        "type": "Parking",
+        "activity": "general",
+        "public_access": true,
+        "low_tide_ok": true,
+        "source": "OSM way 191029798 (hand-corrected location)",
+        "notes": "North-tip parking — quieter end of the island, close to the no-wake cove."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.21680,
+          32.78870
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Fiesta Island Dog Park entry",
+        "type": "Walk-in Gate",
+        "activity": "dogs",
+        "public_access": true,
+        "low_tide_ok": true,
+        "source": "OSM way 1452635946 (centroid)",
+        "notes": "Off-leash dog area entry—park along the loop road."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.22423284999999,
+          32.77268995
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Fiesta Island bridge entrance",
+        "type": "Trailhead",
+        "activity": "bike",
+        "public_access": true,
+        "low_tide_ok": true,
+        "source": "OSM Fiesta Island Road (Sea World Dr bridge approach)",
+        "notes": "Turn off Sea World Dr onto Fiesta Island Rd here — the only car/bike entrance to the island."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.2092938,
+          32.7688868
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "South-west paddle launch (informal)",
+        "type": "Paddle Launch",
+        "activity": "paddle",
+        "public_access": true,
+        "low_tide_ok": true,
+        "source": "approx. anchored to OSM island SW edge",
+        "notes": "Sandy edge of the no-wake cove—typical kayak / SUP launch."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.2287924,
+          32.7700718
+        ]
+      }
+    }
+  ]
+}

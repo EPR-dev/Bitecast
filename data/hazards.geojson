@@ -1,0 +1,51 @@
+{
+  "type": "FeatureCollection",
+  "name": "Fiesta Island cautions",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Shallow flat (low tide)",
+        "kind": "Shallow",
+        "notes": "Exposes mud and seagrass at low tide—keep boats well clear."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.2335924,
+          32.776434099999996
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Submerged rocks (reported)",
+        "kind": "Caution",
+        "notes": "Avoid hugging this stretch of bank."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.2285924,
+          32.7887964
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Active ski course",
+        "kind": "Watercraft",
+        "notes": "Posted ski course; paddlers stay inside the no-wake markers."
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.20671759999999,
+          32.7784341
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "type": "FeatureCollection",
+  "name": "Fiesta Island facilities (OSM)",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Restroom",
+        "type": "Restroom",
+        "source": "OSM node 2797144902"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.229359,
+          32.7666713
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Drinking water",
+        "type": "Water",
+        "source": "OSM node 2905134012"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.2293355,
+          32.7666554
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Fiesta Island Youth Camp",
+        "type": "Camp",
+        "source": "OSM node 4427411972",
+        "fee": "yes"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.2148087,
+          32.7775794
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Restroom",
+        "type": "Restroom",
+        "source": "OSM node 10224023443"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.2258407,
+          32.7671231
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Drinking water",
+        "type": "Water",
+        "source": "OSM node 10224023444"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.225839,
+          32.7671127
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Restroom",
+        "type": "Restroom",
+        "source": "OSM way 275422482"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -117.22659544999999,
+          32.7671965
+        ]
+      }
+    }
+  ]
+}

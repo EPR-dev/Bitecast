@@ -2,9 +2,11 @@
 
 A single-place demo that forecasts the bite at **Fiesta Island, Mission Bay (San Diego)**. Tide-aware, species-aware, offline-first, fully client-side.
 
-[Try the live demo](#) · [Architecture canvas](#a-fundamentals--how-this-dashboard-is-built) · Built with vanilla JS + MapLibre + a Service Worker.
+**Live demo:** [https://epr-dev.github.io/Bitecast/](https://epr-dev.github.io/Bitecast/)
 
-> Replace the live-demo link above with your GitHub Pages URL once you've enabled Pages.
+**Source:** [https://github.com/EPR-dev/Bitecast](https://github.com/EPR-dev/Bitecast)
+
+Built with vanilla JS + MapLibre + a Service Worker. No backend.
 
 ---
 

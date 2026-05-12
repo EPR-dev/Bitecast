@@ -2969,6 +2969,10 @@
     } else {
       document.body.classList.remove("picker-mode");
     }
+    // Tell MapLibre the container resized so the canvas refits to the new sheet height.
+    if (map && typeof map.resize === "function") {
+      window.setTimeout(() => map.resize(), 260);
+    }
   }
 
   // ============================================================
@@ -3016,6 +3020,25 @@
     });
 
     $("toggleJournalMode").addEventListener("click", () => setPickerMode(!pickerMode));
+
+    // Tap the bottom-sheet handle on mobile to toggle between default and minimized
+    // (so the map gets nearly the whole screen). Choice persists per device.
+    const sheetHandle = $("sheetHandle");
+    if (sheetHandle) {
+      const SHEET_MIN_KEY = "bitecast.sheetMin";
+      const savedMin = localStorage.getItem(SHEET_MIN_KEY) === "1";
+      if (savedMin) document.body.classList.add("sheet-min");
+      sheetHandle.setAttribute("aria-expanded", savedMin ? "false" : "true");
+      sheetHandle.addEventListener("click", () => {
+        const isMin = document.body.classList.toggle("sheet-min");
+        localStorage.setItem(SHEET_MIN_KEY, isMin ? "1" : "0");
+        sheetHandle.setAttribute("aria-expanded", isMin ? "false" : "true");
+        // Tell MapLibre the container resized so the canvas refits.
+        if (map && typeof map.resize === "function") {
+          window.setTimeout(() => map.resize(), 260);
+        }
+      });
+    }
     $("jSave").addEventListener("click", saveJournalEntry);
     $("jCancel").addEventListener("click", () => {
       closeJournalForm();

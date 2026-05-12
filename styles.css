@@ -220,7 +220,7 @@ a:hover { text-decoration: underline; }
     left: 0;
     right: 0;
     bottom: 0;
-    height: 62%;
+    height: 48%;
     border-left: none;
     border-top: 1px solid var(--border);
     border-top-left-radius: var(--radius-lg);
@@ -228,16 +228,35 @@ a:hover { text-decoration: underline; }
     box-shadow: 0 -10px 30px rgba(12, 26, 44, 0.08);
     transition: height 220ms ease;
   }
-  body.picker-mode .sheet { height: 20%; }
+  /* Tap the handle to minimize and get a big map. */
+  body.sheet-min .sheet { height: 22%; }
+  /* Picker mode always shrinks the sheet so the map is reachable. */
+  body.picker-mode .sheet { height: 22%; }
   .sheet-handle {
     display: block;
-    width: 44px;
-    height: 4px;
+    width: 56px;
+    height: 5px;
     margin: 8px auto 4px;
-    border-radius: 2px;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
     background: var(--ink-3);
-    opacity: 0.7;
+    opacity: 0.55;
+    cursor: pointer;
+    position: relative;
+    transition: opacity 120ms ease, background 120ms ease;
   }
+  /* Generous invisible tap target around the visible handle bar. */
+  .sheet-handle::after {
+    content: "";
+    position: absolute;
+    inset: -14px -60px;
+  }
+  .sheet-handle:hover,
+  .sheet-handle:focus-visible { opacity: 0.9; outline: none; }
+  .sheet-handle:active { opacity: 1; background: var(--accent); }
+  /* Hide the handle during picker mode so its tap doesn't compete with map taps. */
+  body.picker-mode .sheet-handle { opacity: 0; pointer-events: none; }
 }
 
 /* ============================================================

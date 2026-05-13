@@ -405,11 +405,6 @@
     if (tideLevel === "high") return "#0b4f7a";
     return "#0a4f7a";
   }
-  function shoreGlowColorForTide() {
-    if (tideStage === "incoming" || tideStage === "slack-high") return "#0a72b8";
-    if (tideStage === "outgoing" || tideStage === "slack-low") return "#7a5a36";
-    return "#0a72b8";
-  }
   // Match a target date against the daily forecast arrays to get its sunrise/sunset.
   function sunForDate(d) {
     if (!d) return { sunrise: sunriseTime, sunset: sunsetTime };
@@ -803,13 +798,11 @@
       if (!map.getLayer(id)) return;
       map.setLayoutProperty(id, "visibility", show ? "visible" : "none");
     };
-    vis("park-fill", !simple);
     vis("zones-fill", !simple);
     vis("pois-layer", !simple);
     vis("journal-layer", $("filterJournal") && $("filterJournal").checked);
     vis("access-layer", true);
     vis("hazards-layer", true);
-    vis("shore-line-glow", true);
     vis("shore-line", true);
     // Phase 8: continuous habitat heat map + best-spot pin always visible
     // when the user is not in simple-map mode. The user can hide the heat
@@ -823,9 +816,6 @@
     if (map.getLayer("zones-fill")) map.setFilter("zones-fill", zoneFilterExpression());
     const colorByTide = $("filterTideColor") && $("filterTideColor").checked;
     const mainColor = colorByTide ? shoreColorForTide() : "#0a4f7a";
-    // Inner glow is the LAND-side soft shadow — keep it in the sand family at
-    // all times so it never reads as heatmap bleed.
-    if (map.getLayer("shore-line-glow")) map.setPaintProperty("shore-line-glow", "line-color", "#c9b687");
     if (map.getLayer("shore-line")) map.setPaintProperty("shore-line", "line-color", mainColor);
   }
   function popupHtml(props, titleKey) {
@@ -2723,25 +2713,48 @@
         data: data.nonWaterMask || { type: "FeatureCollection", features: [] } });
 
       // ====================================================================
-      // Layer order matters: MapLibre draws in the order layers are added.
+      // Layer order with the OpenFreeMap Positron vector basemap.
       //
-      // Water-area visuals (eelgrass + heatmap) are drawn FIRST. The heatmap's
-      // Gaussian radius will inevitably blur past the shoreline — that's
-      // expected and is what gives the heat its smooth field. We then draw the
-      // land-fill polygon ON TOP, which acts as a hard mask: any heatmap or
-      // eelgrass pixels that bled onto the island are occluded by the sand
-      // fill. The shoreline is drawn last so it always reads as a crisp edge.
+      // Strategy: leverage the basemap's own layers as the visual baseline,
+      // and inject our overlays into specific z-positions:
+      //
+      //   1. Basemap: background → park → water → ... → waterway → roads
+      //      → buildings → labels (last via the symbol render pass)
+      //
+      //   2. Insert WATER-AREA overlays (eelgrass, heat) and the NON-WATER
+      //      MASK *immediately before* the basemap's "waterway" layer. This
+      //      means: water is drawn first → our heat/mask draws on top of it
+      //      → then the basemap's land features (roads, buildings) draw on
+      //      top of our mask. Result: the heat is clipped to water, while
+      //      the surrounding mainland keeps its full Positron styling.
+      //
+      //   3. Insert ON-SURFACE overlays (zones, shoreline accent, markers)
+      //      *immediately before* the first label/symbol layer, so they
+      //      appear above the basemap features but below the text labels.
       // ====================================================================
+
+      const basemapLayers = map.getStyle().layers.map((l) => l.id);
+      const insertBefore = (...candidates) => {
+        for (const id of candidates) if (basemapLayers.indexOf(id) >= 0) return id;
+        return undefined;
+      };
+      // First non-water basemap layer above the water fill.
+      const beforeLand = insertBefore("waterway", "building", "tunnel_motorway_casing", "highway_minor");
+      // First label/symbol layer in the basemap.
+      const beforeLabels = insertBefore(
+        "waterway_line_label", "water_name_point_label", "water_name_line_label",
+        "highway-name-path", "label_other", "label_village", "label_city",
+      );
 
       // Eelgrass habitat hint, drawn below the heat so the heat dominates.
       map.addLayer({
         id: "eelgrass-fill", type: "fill", source: "eelgrass",
         paint: {
           "fill-color": "#10b981",
-          "fill-opacity": 0.10,
+          "fill-opacity": 0.18,
           "fill-outline-color": "#047857",
         },
-      });
+      }, beforeLand);
       // Continuous species-aware heat field over the bathymetric grid.
       map.addLayer({
         id: "habitat-heat", type: "heatmap", source: "bathy-grid",
@@ -2783,26 +2796,27 @@
           ],
           "heatmap-opacity": [
             "interpolate", ["linear"], ["zoom"],
-            10, 0.55,
-            14, 0.70,
-            17, 0.55,
+            10, 0.6,
+            14, 0.75,
+            17, 0.6,
           ],
         },
-      });
+      }, beforeLand);
 
-      // Non-water mask: sand-tone fill over EVERY non-bay area in view
-      // (surrounding mainland + the island). Drawn at near-full opacity so
-      // it fully occludes any heatmap bleed past the bay's shoreline.
+      // Non-water mask: sand-tone fill over EVERY non-bay area in view.
+      // Inserted before the basemap's land features (waterway, roads,
+      // buildings) so those features draw ON TOP of the mask — meaning the
+      // surrounding mainland keeps its full Positron styling (streets,
+      // neighborhood names, etc.), while any heatmap bleed past the shoreline
+      // is cleanly occluded.
       map.addLayer({
         id: "non-water-fill", type: "fill", source: "non-water-mask",
-        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.94 },
-      });
-      // Island land mask: redundant with non-water-fill (the island is
-      // already covered there) but kept as a precise OSM-park-polygon-aligned
-      // overlay so the on-island visuals key off the same source.
-      map.addLayer({ id: "park-fill", type: "fill", source: "park",
-        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.94 } });
-      // Activity zones (dogs, paddle, boat, etc.) sit on top of the land.
+        paint: { "fill-color": "#f6f0df", "fill-opacity": 0.92 },
+      }, beforeLand);
+
+      // Activity zones (dogs, paddle, boat, etc.). Inserted above basemap
+      // features but below labels so they tint the island without burying
+      // place names.
       map.addLayer({
         id: "zones-fill", type: "fill", source: "zones",
         paint: {
@@ -2811,38 +2825,28 @@
             "dogs", "#f59e0b", "paddle", "#10b981", "boat", "#0a72b8",
             "swim", "#a855f7", "no-wake", "#7c3aed", "#4ba3d6"
           ],
-          "fill-opacity": 0.18,
+          "fill-opacity": 0.22,
           "fill-outline-color": "#0c1a2c",
         },
-      });
+      }, beforeLabels);
 
-      // Soft sand-tone inner glow on the LAND side of the shoreline — this
-      // sells the edge without introducing a wide blue halo that reads as
-      // heatmap bleed. Color stays in the sand family regardless of tide so
-      // the eye never confuses it with water.
-      map.addLayer({
-        id: "shore-line-glow", type: "line", source: "shore",
-        paint: {
-          "line-color": "#c9b687",
-          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2, 14, 5, 18, 8],
-          "line-opacity": 0.55, "line-blur": 1,
-        },
-        layout: { "line-cap": "round", "line-join": "round" },
-      });
+      // Subtle shoreline accent specifically around Fiesta Island (the demo's
+      // focal point). The basemap already draws the island's outline; this
+      // adds a tide-aware highlight to call out the focus.
       map.addLayer({
         id: "shore-line", type: "line", source: "shore",
         paint: {
           "line-color": shoreColorForTide(),
-          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2, 14, 3.5, 18, 5.5],
-          "line-opacity": 1.0,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.5, 14, 2.5, 18, 4],
+          "line-opacity": 0.85,
         },
         layout: { "line-cap": "round", "line-join": "round" },
-      });
+      }, beforeLabels);
       map.addLayer({
         id: "hazards-layer", type: "circle", source: "hazards",
         paint: { "circle-radius": 7, "circle-color": "#f59e0b",
           "circle-stroke-width": 2, "circle-stroke-color": "#1a1204" },
-      });
+      }, beforeLabels);
       map.addLayer({
         id: "access-layer", type: "circle", source: "access",
         paint: {
@@ -2854,13 +2858,13 @@
           ],
           "circle-stroke-width": 2, "circle-stroke-color": "#ffffff",
         },
-      });
+      }, beforeLabels);
       map.addLayer({
         id: "pois-layer", type: "circle", source: "pois",
         paint: { "circle-radius": 5, "circle-color": "#14b8a6",
           "circle-stroke-width": 1.5, "circle-stroke-color": "#ffffff" },
-      });
-      // Phase 8: "Best spot" pin. Two stacked circles for a pulsing-pin look.
+      }, beforeLabels);
+      // "Best spot" pin. Two stacked circles for a pulsing-pin look.
       map.addLayer({
         id: "best-spot-halo", type: "circle", source: "best-spot",
         paint: {
@@ -2871,7 +2875,7 @@
           "circle-stroke-color": "#ef4444",
           "circle-stroke-opacity": 0.55,
         },
-      });
+      }, beforeLabels);
       map.addLayer({
         id: "best-spot-dot", type: "circle", source: "best-spot",
         paint: {
@@ -2880,7 +2884,7 @@
           "circle-stroke-width": 2.5,
           "circle-stroke-color": "#ffffff",
         },
-      });
+      }, beforeLabels);
       map.addLayer({
         id: "journal-layer", type: "circle", source: "journal",
         paint: {
@@ -2901,7 +2905,7 @@
           "circle-stroke-width": 2.5,
           "circle-stroke-color": "#ffffff",
         },
-      });
+      }, beforeLabels);
 
       const bounds = new maplibregl.LngLatBounds();
       (data.shore.features || []).forEach((f) => extendBoundsWithGeometry(bounds, f.geometry));
@@ -2923,7 +2927,7 @@
     const layers = [
       ["access-layer", "name"], ["hazards-layer", "name"],
       ["pois-layer", "name"], ["zones-fill", "name"],
-      ["park-fill", "name"], ["journal-layer", "name"],
+      ["journal-layer", "name"],
     ];
     map.on("click", (e) => {
       if (pickerMode) {

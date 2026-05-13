@@ -516,7 +516,7 @@
     return days + (days === 1 ? " day ago" : " days ago");
   }
   async function loadGeo() {
-    const [shore, access, hazards, pois, zones, park, eelgrass, bathy] = await Promise.all([
+    const [shore, access, hazards, pois, zones, park, eelgrass, bathy, nonWaterMask] = await Promise.all([
       fetchJson("data/shore.geojson"),
       fetchJson("data/access.geojson"),
       fetchJson("data/hazards.geojson"),
@@ -525,6 +525,7 @@
       fetchJson("data/park.geojson"),
       fetchJson("data/eelgrass.geojson").catch(() => ({ type: "FeatureCollection", features: [] })),
       fetchJson("data/bathy_grid.geojson").catch(() => ({ type: "FeatureCollection", features: [] })),
+      fetchJson("data/non_water_mask.geojson").catch(() => ({ type: "FeatureCollection", features: [] })),
     ]);
     accessFeatures = access.features || [];
     zoneFeatures = zones.features || [];
@@ -538,7 +539,7 @@
       bottom_class: f.properties.bottom_class,
     }));
     bathyGeoJson = bathy;
-    return { shore, access, hazards, pois, zones, park, eelgrass, bathy };
+    return { shore, access, hazards, pois, zones, park, eelgrass, bathy, nonWaterMask };
   }
   function noaaUrl(product, extra) {
     return (
@@ -2715,6 +2716,11 @@
       map.addSource("best-spot", { type: "geojson",
         data: { type: "FeatureCollection", features: [] } });
       map.addSource("journal", { type: "geojson", data: journalToGeoJson(journalEntries) });
+      // Non-water mask: a MultiPolygon covering every non-bay area in view
+      // (surrounding mainland + the island). Generated from the bathy grid by
+      // scripts/build_water_mask.js. Used to clip the heatmap to water-only.
+      map.addSource("non-water-mask", { type: "geojson",
+        data: data.nonWaterMask || { type: "FeatureCollection", features: [] } });
 
       // ====================================================================
       // Layer order matters: MapLibre draws in the order layers are added.
@@ -2784,8 +2790,17 @@
         },
       });
 
-      // Land MASK: sand-tone fill over the island polygon. Drawn AFTER the
-      // heat/eelgrass so it cleanly clips their bleed at the shoreline.
+      // Non-water mask: sand-tone fill over EVERY non-bay area in view
+      // (surrounding mainland + the island). This is the primary clip layer
+      // that keeps the heatmap visually contained to the water — without it
+      // the heat's Gaussian radius spreads past every shore around the bay.
+      map.addLayer({
+        id: "non-water-fill", type: "fill", source: "non-water-mask",
+        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.78 },
+      });
+      // Island land mask: redundant with non-water-fill (the island is
+      // already covered there) but kept as a precise OSM-park-polygon-aligned
+      // overlay so the on-island visuals key off the same source.
       map.addLayer({ id: "park-fill", type: "fill", source: "park",
         paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.78 } });
       // Activity zones (dogs, paddle, boat, etc.) sit on top of the land.

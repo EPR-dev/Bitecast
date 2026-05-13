@@ -7,7 +7,7 @@
 // Bump CACHE_VERSION when you ship breaking changes to the app shell so
 // previous caches are evicted on activate.
 
-const CACHE_VERSION = "bitecast-v14";
+const CACHE_VERSION = "bitecast-v15";
 const SHELL_CACHE = CACHE_VERSION + "-shell";
 const TILE_CACHE = CACHE_VERSION + "-tiles";
 
@@ -25,6 +25,7 @@ const APP_SHELL = [
   "./data/zones.geojson",
   "./data/eelgrass.geojson",
   "./data/bathy_grid.geojson",
+  "./data/non_water_mask.geojson",
   "./data/community.json",
   "./og-image.svg",
   "https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js",

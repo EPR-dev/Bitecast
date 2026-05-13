@@ -1,49 +1,19 @@
 {
   "type": "FeatureCollection",
-  "name": "Fiesta Island cautions",
+  "name": "Fiesta Island fishing-structure & caution",
   "features": [
     {
       "type": "Feature",
       "properties": {
-        "name": "Shallow flat (low tide)",
-        "kind": "Shallow",
-        "notes": "Exposes mud and seagrass at low tide—keep boats well clear."
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -117.2335924,
-          32.776434099999996
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Submerged rocks (reported)",
-        "kind": "Caution",
-        "notes": "Avoid hugging this stretch of bank."
+        "name": "Rocky bottom (reported)",
+        "kind": "Structure",
+        "notes": "Rocky bottom along the bank — typical structure that holds bass and croaker. Work the edges on a moving tide, especially low light."
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
           -117.2285924,
           32.7887964
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "name": "Active ski course",
-        "kind": "Watercraft",
-        "notes": "Posted ski course; paddlers stay inside the no-wake markers."
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -117.20671759999999,
-          32.7784341
         ]
       }
     }

@@ -821,9 +821,10 @@
     vis("best-spot-dot", showHeat);
     if (map.getLayer("zones-fill")) map.setFilter("zones-fill", zoneFilterExpression());
     const colorByTide = $("filterTideColor") && $("filterTideColor").checked;
-    const mainColor = colorByTide ? shoreColorForTide() : "#4ba3d6";
-    const glowColor = colorByTide ? shoreGlowColorForTide() : "#0a72b8";
-    if (map.getLayer("shore-line-glow")) map.setPaintProperty("shore-line-glow", "line-color", glowColor);
+    const mainColor = colorByTide ? shoreColorForTide() : "#0a4f7a";
+    // Inner glow is the LAND-side soft shadow — keep it in the sand family at
+    // all times so it never reads as heatmap bleed.
+    if (map.getLayer("shore-line-glow")) map.setPaintProperty("shore-line-glow", "line-color", "#c9b687");
     if (map.getLayer("shore-line")) map.setPaintProperty("shore-line", "line-color", mainColor);
   }
   function popupHtml(props, titleKey) {
@@ -2761,15 +2762,18 @@
             17, 26,
           ],
           // Cool blue (low) -> green (mid) -> orange (high) -> red (peak).
+          // Low-density start pushed higher and made fully transparent so the
+          // heat doesn't spread a wide blue "floor" across the bay — only
+          // meaningful scores produce visible color.
           "heatmap-color": [
             "interpolate", ["linear"], ["heatmap-density"],
             0,    "rgba(15, 76, 117, 0)",
-            0.12, "rgba(15, 76, 117, 0.40)",
-            0.28, "rgba(56, 161, 198, 0.55)",
-            0.45, "rgba(125, 197, 154, 0.70)",
+            0.20, "rgba(15, 76, 117, 0)",
+            0.32, "rgba(56, 161, 198, 0.35)",
+            0.48, "rgba(125, 197, 154, 0.60)",
             0.62, "rgba(253, 219, 130, 0.80)",
-            0.78, "rgba(245, 158, 66, 0.90)",
-            0.92, "rgba(220, 60, 60, 0.95)",
+            0.78, "rgba(245, 158, 66, 0.92)",
+            0.92, "rgba(220, 60, 60, 0.96)",
           ],
           "heatmap-opacity": [
             "interpolate", ["linear"], ["zoom"],
@@ -2798,12 +2802,16 @@
         },
       });
 
+      // Soft sand-tone inner glow on the LAND side of the shoreline — this
+      // sells the edge without introducing a wide blue halo that reads as
+      // heatmap bleed. Color stays in the sand family regardless of tide so
+      // the eye never confuses it with water.
       map.addLayer({
         id: "shore-line-glow", type: "line", source: "shore",
         paint: {
-          "line-color": shoreGlowColorForTide(),
-          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 6, 14, 14, 18, 22],
-          "line-opacity": 0.45, "line-blur": 2,
+          "line-color": "#c9b687",
+          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2, 14, 5, 18, 8],
+          "line-opacity": 0.55, "line-blur": 1,
         },
         layout: { "line-cap": "round", "line-join": "round" },
       });
@@ -2811,7 +2819,7 @@
         id: "shore-line", type: "line", source: "shore",
         paint: {
           "line-color": shoreColorForTide(),
-          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2.5, 14, 4.5, 18, 7],
+          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2, 14, 3.5, 18, 5.5],
           "line-opacity": 1.0,
         },
         layout: { "line-cap": "round", "line-join": "round" },

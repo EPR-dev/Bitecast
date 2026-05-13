@@ -203,7 +203,7 @@ a:hover { text-decoration: underline; }
   grid-template-columns: 1fr 420px;
   height: calc(100vh - 65px);
 }
-#map { width: 100%; height: 100%; background: #cfe1ef; }
+#map { width: 100%; height: 100%; background: #9fc5dc; }
 
 .sheet {
   background: var(--surface);

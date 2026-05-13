@@ -25,8 +25,12 @@
       },
     },
     layers: [
-      { id: "osm-bg", type: "background", paint: { "background-color": "#cfe1ef" } },
-      { id: "osm", type: "raster", source: "osm", paint: { "raster-opacity": 0.85 } },
+      // Saturated water blue shows through wherever no fill is drawn —
+      // this is what gives the surrounding bay its unmistakable "this is water" read.
+      { id: "osm-bg", type: "background", paint: { "background-color": "#9fc5dc" } },
+      // Dialed OSM raster opacity down so the OSM water/land tile colors don't
+      // wash into each other; our land-fill layer paints the island on top.
+      { id: "osm", type: "raster", source: "osm", paint: { "raster-opacity": 0.62 } },
     ],
   };
   const LEGACY_WAYPOINT_KEY = "fiesta-island-planner-waypoints-v1";
@@ -391,13 +395,15 @@
     return "";
   }
   function shoreColorForTide() {
-    if (tideStage === "incoming") return "#3aa0d6";
-    if (tideStage === "outgoing") return "#c89968";
-    if (tideStage === "slack-high") return "#1565b0";
-    if (tideStage === "slack-low") return "#a17e54";
-    if (tideLevel === "low") return "#c89968";
-    if (tideLevel === "high") return "#1565b0";
-    return "#4ba3d6";
+    // Darkened palette so the shoreline reads cleanly against both the deeper
+    // water-blue background and the sand-tone island fill.
+    if (tideStage === "incoming") return "#0e6fa8";
+    if (tideStage === "outgoing") return "#8a5a2a";
+    if (tideStage === "slack-high") return "#0b4f7a";
+    if (tideStage === "slack-low") return "#6b4a26";
+    if (tideLevel === "low") return "#8a5a2a";
+    if (tideLevel === "high") return "#0b4f7a";
+    return "#0a4f7a";
   }
   function shoreGlowColorForTide() {
     if (tideStage === "incoming" || tideStage === "slack-high") return "#0a72b8";
@@ -2709,8 +2715,11 @@
         data: { type: "FeatureCollection", features: [] } });
       map.addSource("journal", { type: "geojson", data: journalToGeoJson(journalEntries) });
 
+      // Land base: a warm sand tone painted over the OSM raster on the island
+      // polygon. This is the primary land/water differentiation — it gives the
+      // island a clear edge against the surrounding blue water.
       map.addLayer({ id: "park-fill", type: "fill", source: "park",
-        paint: { "fill-color": "#7fb88f", "fill-opacity": 0.14 } });
+        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.62 } });
       map.addLayer({
         id: "zones-fill", type: "fill", source: "zones",
         paint: {
@@ -2778,8 +2787,8 @@
         id: "shore-line-glow", type: "line", source: "shore",
         paint: {
           "line-color": shoreGlowColorForTide(),
-          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 4, 14, 10, 18, 16],
-          "line-opacity": 0.35, "line-blur": 1.5,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 6, 14, 14, 18, 22],
+          "line-opacity": 0.45, "line-blur": 2,
         },
         layout: { "line-cap": "round", "line-join": "round" },
       });
@@ -2787,8 +2796,8 @@
         id: "shore-line", type: "line", source: "shore",
         paint: {
           "line-color": shoreColorForTide(),
-          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 1.5, 14, 3, 18, 5],
-          "line-opacity": 0.95,
+          "line-width": ["interpolate", ["linear"], ["zoom"], 10, 2.5, 14, 4.5, 18, 7],
+          "line-opacity": 1.0,
         },
         layout: { "line-cap": "round", "line-join": "round" },
       });

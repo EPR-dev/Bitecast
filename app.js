@@ -2829,19 +2829,31 @@
         },
         layout: { "line-cap": "round", "line-join": "round" },
       }, beforeLabels);
+      // Hazards / caution markers — bright yellow with red ring reads as
+      // "warning sign" instantly, instead of blending with the other orange
+      // dots we used to draw for non-fishing things (dog park, etc.).
       map.addLayer({
         id: "hazards-layer", type: "circle", source: "hazards",
-        paint: { "circle-radius": 7, "circle-color": "#f59e0b",
-          "circle-stroke-width": 2, "circle-stroke-color": "#1a1204" },
+        paint: {
+          "circle-radius": 7,
+          "circle-color": "#fde047",
+          "circle-stroke-width": 2.5,
+          "circle-stroke-color": "#b91c1c",
+        },
       }, beforeLabels);
+      // Access dots — colored by what you'd use that access for as an angler:
+      // paddle launches in green, boat ramps in deep blue, and the road/bike
+      // entrance in purple. Generic parking falls back to the boat-blue.
       map.addLayer({
         id: "access-layer", type: "circle", source: "access",
         paint: {
           "circle-radius": 8,
           "circle-color": [
             "match", ["get", "activity"],
-            "dogs", "#f59e0b", "paddle", "#10b981", "boat", "#0a72b8",
-            "bike", "#7c3aed", "#0a72b8"
+            "paddle", "#10b981",
+            "boat",   "#0a72b8",
+            "bike",   "#7c3aed",
+            "#0a72b8"
           ],
           "circle-stroke-width": 2, "circle-stroke-color": "#ffffff",
         },

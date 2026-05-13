@@ -100,25 +100,6 @@
     {
       "type": "Feature",
       "properties": {
-        "name": "Fiesta Island Dog Park entry",
-        "type": "Walk-in Gate",
-        "activity": "dogs",
-        "public_access": true,
-        "low_tide_ok": true,
-        "source": "OSM way 1452635946 (centroid)",
-        "notes": "Off-leash dog area entry—park along the loop road."
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -117.22423284999999,
-          32.77268995
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
         "name": "Fiesta Island bridge entrance",
         "type": "Trailhead",
         "activity": "bike",

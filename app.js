@@ -2757,15 +2757,15 @@
             14, 2.0,
             17, 3.2,
           ],
-          // Radius tuned to ~half the cell spacing in screen px so cells blur
-          // together smoothly without producing huge blooms that overrun the
-          // island. The land mask above also clips any residual bleed.
+          // Radius tightened so heat stays close to its grid cell. The land
+          // mask above clips any residual bleed past the bay's shoreline, but
+          // a smaller radius means less bleed to clip in the first place.
           "heatmap-radius": [
             "interpolate", ["linear"], ["zoom"],
-            10, 5,
-            13, 11,
-            15, 17,
-            17, 26,
+            10, 3,
+            13, 7,
+            15, 12,
+            17, 20,
           ],
           // Cool blue (low) -> green (mid) -> orange (high) -> red (peak).
           // Low-density start pushed higher and made fully transparent so the
@@ -2791,18 +2791,17 @@
       });
 
       // Non-water mask: sand-tone fill over EVERY non-bay area in view
-      // (surrounding mainland + the island). This is the primary clip layer
-      // that keeps the heatmap visually contained to the water — without it
-      // the heat's Gaussian radius spreads past every shore around the bay.
+      // (surrounding mainland + the island). Drawn at near-full opacity so
+      // it fully occludes any heatmap bleed past the bay's shoreline.
       map.addLayer({
         id: "non-water-fill", type: "fill", source: "non-water-mask",
-        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.78 },
+        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.94 },
       });
       // Island land mask: redundant with non-water-fill (the island is
       // already covered there) but kept as a precise OSM-park-polygon-aligned
       // overlay so the on-island visuals key off the same source.
       map.addLayer({ id: "park-fill", type: "fill", source: "park",
-        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.78 } });
+        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.94 } });
       // Activity zones (dogs, paddle, boat, etc.) sit on top of the land.
       map.addLayer({
         id: "zones-fill", type: "fill", source: "zones",

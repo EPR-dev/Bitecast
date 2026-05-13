@@ -798,7 +798,6 @@
       if (!map.getLayer(id)) return;
       map.setLayoutProperty(id, "visibility", show ? "visible" : "none");
     };
-    vis("zones-fill", !simple);
     vis("pois-layer", !simple);
     vis("journal-layer", $("filterJournal") && $("filterJournal").checked);
     vis("access-layer", true);
@@ -813,7 +812,6 @@
     vis("eelgrass-fill", showEelgrass);
     vis("best-spot-halo", showHeat);
     vis("best-spot-dot", showHeat);
-    if (map.getLayer("zones-fill")) map.setFilter("zones-fill", zoneFilterExpression());
     const colorByTide = $("filterTideColor") && $("filterTideColor").checked;
     const mainColor = colorByTide ? shoreColorForTide() : "#0a4f7a";
     if (map.getLayer("shore-line")) map.setPaintProperty("shore-line", "line-color", mainColor);
@@ -2693,7 +2691,6 @@
 
     const addAppLayers = () => {
       map.addSource("park", { type: "geojson", data: data.park });
-      map.addSource("zones", { type: "geojson", data: data.zones });
       map.addSource("shore", { type: "geojson", data: data.shore });
       map.addSource("hazards", { type: "geojson", data: data.hazards });
       map.addSource("access", { type: "geojson", data: data.access });
@@ -2751,7 +2748,7 @@
         id: "eelgrass-fill", type: "fill", source: "eelgrass",
         paint: {
           "fill-color": "#10b981",
-          "fill-opacity": 0.18,
+          "fill-opacity": 0.10,
           "fill-outline-color": "#047857",
         },
       }, beforeLand);
@@ -2770,15 +2767,16 @@
             14, 2.0,
             17, 3.2,
           ],
-          // Radius tightened so heat stays close to its grid cell. The land
-          // mask above clips any residual bleed past the bay's shoreline, but
-          // a smaller radius means less bleed to clip in the first place.
+          // Radius tuned so the ~55m bathy cells blend into a smooth Gaussian
+          // field at typical viewing zooms. The Mission Bay water mask above
+          // handles clipping, so we don't need to fight bleed with a small
+          // radius — the mask does that cleanly while the heat stays smooth.
           "heatmap-radius": [
             "interpolate", ["linear"], ["zoom"],
-            10, 3,
-            13, 7,
-            15, 12,
-            17, 20,
+            10, 6,
+            13, 13,
+            15, 20,
+            17, 30,
           ],
           // Cool blue (low) -> green (mid) -> orange (high) -> red (peak).
           // Low-density start pushed higher and made fully transparent so the
@@ -2814,21 +2812,10 @@
         paint: { "fill-color": "#f6f0df", "fill-opacity": 0.92 },
       }, beforeLand);
 
-      // Activity zones (dogs, paddle, boat, etc.). Inserted above basemap
-      // features but below labels so they tint the island without burying
-      // place names.
-      map.addLayer({
-        id: "zones-fill", type: "fill", source: "zones",
-        paint: {
-          "fill-color": [
-            "match", ["get", "activity"],
-            "dogs", "#f59e0b", "paddle", "#10b981", "boat", "#0a72b8",
-            "swim", "#a855f7", "no-wake", "#7c3aed", "#4ba3d6"
-          ],
-          "fill-opacity": 0.22,
-          "fill-outline-color": "#0c1a2c",
-        },
-      }, beforeLabels);
+      // Activity-zone polygons (swim/boat/paddle/dogs/no-wake) were previously
+      // drawn here as colored rectangles. They've been removed — the same
+      // activity info is already encoded in the access-point dot colors, and
+      // the polygons cluttered the map without adding interpretive value.
 
       // Subtle shoreline accent specifically around Fiesta Island (the demo's
       // focal point). The basemap already draws the island's outline; this
@@ -2926,8 +2913,7 @@
   function wireMapInteractions() {
     const layers = [
       ["access-layer", "name"], ["hazards-layer", "name"],
-      ["pois-layer", "name"], ["zones-fill", "name"],
-      ["journal-layer", "name"],
+      ["pois-layer", "name"], ["journal-layer", "name"],
     ];
     map.on("click", (e) => {
       if (pickerMode) {

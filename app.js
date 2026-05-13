@@ -2715,25 +2715,18 @@
         data: { type: "FeatureCollection", features: [] } });
       map.addSource("journal", { type: "geojson", data: journalToGeoJson(journalEntries) });
 
-      // Land base: a warm sand tone painted over the OSM raster on the island
-      // polygon. This is the primary land/water differentiation — it gives the
-      // island a clear edge against the surrounding blue water.
-      map.addLayer({ id: "park-fill", type: "fill", source: "park",
-        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.62 } });
-      map.addLayer({
-        id: "zones-fill", type: "fill", source: "zones",
-        paint: {
-          "fill-color": [
-            "match", ["get", "activity"],
-            "dogs", "#f59e0b", "paddle", "#10b981", "boat", "#0a72b8",
-            "swim", "#a855f7", "no-wake", "#7c3aed", "#4ba3d6"
-          ],
-          "fill-opacity": 0.18,
-          "fill-outline-color": "#0c1a2c",
-        },
-      });
-      // Phase 8: continuous habitat heat map. Draw UNDER the shore so the
-      // shoreline outline reads on top of the heat.
+      // ====================================================================
+      // Layer order matters: MapLibre draws in the order layers are added.
+      //
+      // Water-area visuals (eelgrass + heatmap) are drawn FIRST. The heatmap's
+      // Gaussian radius will inevitably blur past the shoreline — that's
+      // expected and is what gives the heat its smooth field. We then draw the
+      // land-fill polygon ON TOP, which acts as a hard mask: any heatmap or
+      // eelgrass pixels that bled onto the island are occluded by the sand
+      // fill. The shoreline is drawn last so it always reads as a crisp edge.
+      // ====================================================================
+
+      // Eelgrass habitat hint, drawn below the heat so the heat dominates.
       map.addLayer({
         id: "eelgrass-fill", type: "fill", source: "eelgrass",
         paint: {
@@ -2742,6 +2735,7 @@
           "fill-outline-color": "#047857",
         },
       });
+      // Continuous species-aware heat field over the bathymetric grid.
       map.addLayer({
         id: "habitat-heat", type: "heatmap", source: "bathy-grid",
         paint: {
@@ -2756,13 +2750,15 @@
             14, 2.0,
             17, 3.2,
           ],
-          // Radius grows with zoom so cells blur together into a smooth field.
+          // Radius tuned to ~half the cell spacing in screen px so cells blur
+          // together smoothly without producing huge blooms that overrun the
+          // island. The land mask above also clips any residual bleed.
           "heatmap-radius": [
             "interpolate", ["linear"], ["zoom"],
-            10, 6,
-            13, 14,
-            15, 22,
-            17, 36,
+            10, 5,
+            13, 11,
+            15, 17,
+            17, 26,
           ],
           // Cool blue (low) -> green (mid) -> orange (high) -> red (peak).
           "heatmap-color": [
@@ -2783,6 +2779,25 @@
           ],
         },
       });
+
+      // Land MASK: sand-tone fill over the island polygon. Drawn AFTER the
+      // heat/eelgrass so it cleanly clips their bleed at the shoreline.
+      map.addLayer({ id: "park-fill", type: "fill", source: "park",
+        paint: { "fill-color": "#e8dcb8", "fill-opacity": 0.78 } });
+      // Activity zones (dogs, paddle, boat, etc.) sit on top of the land.
+      map.addLayer({
+        id: "zones-fill", type: "fill", source: "zones",
+        paint: {
+          "fill-color": [
+            "match", ["get", "activity"],
+            "dogs", "#f59e0b", "paddle", "#10b981", "boat", "#0a72b8",
+            "swim", "#a855f7", "no-wake", "#7c3aed", "#4ba3d6"
+          ],
+          "fill-opacity": 0.18,
+          "fill-outline-color": "#0c1a2c",
+        },
+      });
+
       map.addLayer({
         id: "shore-line-glow", type: "line", source: "shore",
         paint: {
